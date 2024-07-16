@@ -1,0 +1,132 @@
+.card-container {
+  height: 50vh;
+  width: 90vw;
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid grey;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  padding: 8px;
+}
+
+.calories {
+  color: palevioletred;
+  font-size: 18px;
+  align-self: center;
+}
+
+.image {
+  height: 25vh;
+  width: 25vw;
+  border-radius: 7px;
+}
+
+.dish-name {
+  font-size: 15px;
+  padding-left: 5px;
+  margin-top: 0px;
+  padding-top: 0px;
+}
+
+.price {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.card-item-details {
+  width: 60vw;
+}
+
+.card-name-availability-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+.description {
+  color: grey;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.cart-quantity-container {
+  display: flex;
+  align-items: center;
+  background-color: green;
+  color: white;
+  width: 90px;
+  height: 40px;
+  border-radius: 7px;
+  padding: 7px;
+  justify-content: center;
+}
+
+.quantity-controller-button {
+  color: #ffffff;
+  border: none;
+  font-size: 16px;
+  font-weight: 800;
+  
+  background-color: transparent;
+  margin: 0px;
+}
+
+.icons {
+  background-color: transparent;
+  font-size: 20px;
+  color: white;
+}
+
+.cart-quantity {
+  color: #ffffff;
+  font-family: 'Roboto';
+  font-size: 17px;
+  font-weight: 500;
+  margin: 8px;
+  line-height: 1.3;
+}
+.availability {
+  font-size: 25px;
+  color: green;
+}
+.Customizations {
+  color: blueviolet;
+  font-size: 16px;
+}
+.available {
+  color: green;
+}
+.unavailable {
+  color: red;
+}
+
+.button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  color: green;
+}
+
+@media screen and (min-width: 768px) {
+  .card-container {
+    height: 55vh;
+  }
+  .calories {
+    font-size: 25px;
+  }
+
+  .image {
+    height: 35vh;
+    width: 23vw;
+  }
+
+  .dish-name {
+    font-size: 20px;
+  }
+
+  .cart-quantity {
+    font-size: 18px;
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+}
