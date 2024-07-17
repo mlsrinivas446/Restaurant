@@ -65,7 +65,6 @@ const FoodItem = props => {
                   type="button"
                   className="quantity-controller-button"
                   data-testid={`minus-${id}`}
-                  aria-label="Decrease quantity"
                   onClick={handleDecrement}
                 >
                   -
@@ -75,7 +74,6 @@ const FoodItem = props => {
                   type="button"
                   className="quantity-controller-button"
                   data-testid={`plus-${id}`}
-                  aria-label="Increase quantity"
                   onClick={handleIncrement}
                 >
                   +
