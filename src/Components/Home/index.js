@@ -136,7 +136,7 @@ class Home extends Component {
 
     return (
       <div className="home-container">
-        <Header heading={branchDetails.name} quantity={cartCount} />
+        <Header heading={branchDetails.restaurantName} quantity={cartCount} />
         <ul className="menu-list">
           {menuList.map(each => (
             <button
