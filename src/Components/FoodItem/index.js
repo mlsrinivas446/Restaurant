@@ -1,9 +1,14 @@
-import React, {useState, useEffect, useRef} from 'react'
+import {useState, useEffect} from 'react'
 import {GrSquare} from 'react-icons/gr'
 import './index.css'
 
-const FoodItem = props => {
-  const {item, onIncreaseButton, onDecreaseButton, activeCategory} = props
+const FoodItem = ({
+  item,
+  onIncreaseButton,
+  onDecreaseButton,
+  activeCategory,
+  addToCart,
+}) => {
   const {
     availability,
     calories,
@@ -27,13 +32,19 @@ const FoodItem = props => {
 
   const handleIncrement = () => {
     setQuantity(prevQuantity => prevQuantity + 1)
-    onIncreaseButton()
+    onIncreaseButton(id)
   }
 
   const handleDecrement = () => {
     if (quantity > 0) {
       setQuantity(prevQuantity => prevQuantity - 1)
-      onDecreaseButton()
+      onDecreaseButton(id)
+    }
+  }
+
+  const handleAddToCart = () => {
+    if (quantity > 0) {
+      addToCart(item, quantity)
     }
   }
 
@@ -58,29 +69,40 @@ const FoodItem = props => {
         <p className="description">{description}</p>
 
         {availability && (
-          <div className="cart-quantity-container">
-            {activeCategory === categoryId && (
-              <div className="button">
-                <button
-                  type="button"
-                  className="quantity-controller-button"
-                  data-testid={`minus-${id}`}
-                  onClick={handleDecrement}
-                >
-                  -
-                </button>
-                <p className="cart-quantity">{quantity}</p>
-                <button
-                  type="button"
-                  className="quantity-controller-button"
-                  data-testid={`plus-${id}`}
-                  onClick={handleIncrement}
-                >
-                  +
-                </button>
-              </div>
+          <>
+            <div className="cart-quantity-container">
+              {activeCategory === categoryId && (
+                <div className="button">
+                  <button
+                    type="button"
+                    className="quantity-controller-button"
+                    data-testid={`minus-${id}`}
+                    onClick={handleDecrement}
+                  >
+                    -
+                  </button>
+                  <p className="cart-quantity">{quantity}</p>
+                  <button
+                    type="button"
+                    className="quantity-controller-button"
+                    data-testid={`plus-${id}`}
+                    onClick={handleIncrement}
+                  >
+                    +
+                  </button>
+                </div>
+              )}
+            </div>
+            {quantity > 0 && (
+              <button
+                type="button"
+                className="button add-to-cart-btn"
+                onClick={handleAddToCart}
+              >
+                ADD TO CART
+              </button>
             )}
-          </div>
+          </>
         )}
         {isCustomizable && (
           <p className="customizations">Customizations available</p>

@@ -1,35 +1,29 @@
-import React, {Component} from 'react'
-import Header from '../Header'
+import React from 'react'
+import {useCart} from '../../contexts/CartContext'
+
 import FoodItem from '../FoodItem'
+import Header from '../Header'
 import './index.css'
 
-class Home extends Component {
-  state = {
-    branchDetails: {},
-    dishList: [],
-    menuList: [],
-    selectedMenuCategory: '',
-    cartCount: 0,
-    quantities: {},
-  }
+const Home = () => {
+  const {cartCount, addCartItem} = useCart()
+  const [branchDetails, setBranchDetails] = React.useState({})
+  const [dishList, setDishList] = React.useState([])
+  const [menuList, setMenuList] = React.useState([])
+  const [selectedMenuCategory, setSelectedMenuCategory] = React.useState('')
+  const [quantities, setQuantities] = React.useState({})
 
-  componentDidMount() {
-    this.fetchMenuDetails()
-  }
-
-  fetchMenuDetails = async () => {
+  const fetchMenuDetails = async () => {
     const url =
       'https://apis2.ccbp.in/restaurant-app/restaurant-menu-list-details'
-    const options = {
-      method: 'GET',
-    }
+    const options = {method: 'GET'}
 
     try {
       const response = await fetch(url, options)
       if (response.ok) {
         const data = await response.json()
 
-        const branchDetails = {
+        const formatBranchDetails = {
           name: data[0].branch_name,
           nextUrl: data[0].nexturl,
           id: data[0].restaurant_id,
@@ -38,14 +32,14 @@ class Home extends Component {
           tableId: data[0].table_id,
         }
 
-        const menuList = data[0].table_menu_list.map(item => ({
+        const formatMenuList = data[0].table_menu_list.map(item => ({
           category: item.menu_category,
           categoryId: item.menu_category_id,
           categoryImage: item.menu_category_image,
           nextUrl: item.nexturl,
         }))
 
-        const dishList = data[0].table_menu_list.flatMap(item =>
+        const formatDishList = data[0].table_menu_list.flatMap(item =>
           item.category_dishes.map(each => ({
             addonCat: each.addonCat.map(addon => ({
               addonCategory: addon.addon_category,
@@ -78,16 +72,16 @@ class Home extends Component {
           })),
         )
 
-        this.setState({
-          branchDetails,
-          dishList,
-          menuList,
-          selectedMenuCategory: menuList[0]?.categoryId || '',
-          quantities: dishList.reduce((acc, dish) => {
+        setBranchDetails(formatBranchDetails)
+        setMenuList(formatMenuList)
+        setDishList(formatDishList)
+        setSelectedMenuCategory(formatMenuList[0]?.categoryId || '')
+        setQuantities(
+          formatDishList.reduce((acc, dish) => {
             acc[dish.id] = 0
             return acc
           }, {}),
-        })
+        )
       } else {
         console.error('Failed to fetch data')
       }
@@ -96,76 +90,64 @@ class Home extends Component {
     }
   }
 
-  setSelectedMenuCategory = categoryId => {
-    this.setState({selectedMenuCategory: categoryId})
-  }
+  React.useEffect(() => {
+    fetchMenuDetails()
+  }, [])
 
-  onIncreaseButton = id => {
-    this.setState(prevState => ({
-      cartCount: prevState.cartCount + 1,
-      quantities: {
-        ...prevState.quantities,
-        [id]: prevState.quantities[id] + 1,
-      },
+  const onIncreaseButton = id => {
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [id]: prevQuantities[id] + 1,
     }))
   }
 
-  onDecreaseButton = id => {
-    this.setState(prevState => ({
-      cartCount: prevState.cartCount > 0 ? prevState.cartCount - 1 : 0,
-      quantities: {
-        ...prevState.quantities,
-        [id]: prevState.quantities[id] > 0 ? prevState.quantities[id] - 1 : 0,
-      },
+  const onDecreaseButton = id => {
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [id]: prevQuantities[id] > 0 ? prevQuantities[id] - 1 : 0,
     }))
   }
 
-  render() {
-    const {
-      branchDetails,
-      menuList,
-      selectedMenuCategory,
-      dishList,
-      cartCount,
-      quantities,
-    } = this.state
+  const addToCart = (item, quantity) => {
+    if (quantity > 0) {
+      addCartItem(item, quantity)
+    }
+  }
 
-    const filteredDishes = dishList.filter(
-      dish => dish.categoryId === selectedMenuCategory,
-    )
-
-    return (
-      <div className="home-container">
-        <Header heading={branchDetails.restaurantName} quantity={cartCount} />
-        <ul className="menu-list">
-          {menuList.map(each => (
-            <button
-              type="button"
-              key={each.categoryId}
-              className={`menu-button ${
-                selectedMenuCategory === each.categoryId ? 'selected' : ''
-              }`}
-              onClick={() => this.setSelectedMenuCategory(each.categoryId)}
-            >
-              <li className="menu-item">{each.category}</li>
-            </button>
-          ))}
-        </ul>
-        <ul className="menu-container">
-          {filteredDishes.map(each => (
+  return (
+    <div className="home-container">
+      <Header heading={branchDetails.restaurantName} quantity={cartCount} />
+      <ul className="menu-list">
+        {menuList.map(each => (
+          <button
+            type="button"
+            key={each.categoryId}
+            className={`menu-button ${
+              selectedMenuCategory === each.categoryId ? 'selected' : ''
+            }`}
+            onClick={() => setSelectedMenuCategory(each.categoryId)}
+          >
+            <li className="menu-item">{each.category}</li>
+          </button>
+        ))}
+      </ul>
+      <ul className="menu-container">
+        {dishList
+          .filter(dish => dish.categoryId === selectedMenuCategory)
+          .map(each => (
             <FoodItem
               key={each.id}
               item={each}
               quantity={quantities[each.id]}
-              onIncreaseButton={() => this.onIncreaseButton(each.id)}
-              onDecreaseButton={() => this.onDecreaseButton(each.id)}
+              onIncreaseButton={() => onIncreaseButton(each.id)}
+              onDecreaseButton={() => onDecreaseButton(each.id)}
               activeCategory={selectedMenuCategory}
+              addToCart={addToCart}
             />
           ))}
-        </ul>
-      </div>
-    )
-  }
+      </ul>
+    </div>
+  )
 }
 
 export default Home

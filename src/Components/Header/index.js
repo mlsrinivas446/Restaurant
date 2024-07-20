@@ -1,21 +1,44 @@
-import {IoCartOutline} from 'react-icons/io5'
+import Cookies from 'js-cookie'
+import {useHistory, Link} from 'react-router-dom'
+import {FaShoppingCart} from 'react-icons/fa'
+import {useCart} from '../../contexts/CartContext'
+
 import './index.css'
 
-const Header = props => {
-  const {heading, quantity} = props
+const Header = () => {
+  const {cartCount} = useCart()
+  const history = useHistory()
+
+  const handleLogout = () => {
+    Cookies.remove('jwt_token')
+    history.replace('/login')
+  }
+
   return (
-    <div className="header-container">
-      <h1 className="header">{heading}</h1>
-      <div className="cart-container">
-        <p className="my-order">My Orders</p>
-        <div className="cart-count-container">
-          <IoCartOutline className="cart-Icon" />
-          <p className="cart-count" id="cart-count" aria-label="cart count">
-            {quantity}
-          </p>
+    <header className="header-container">
+      <Link to="/" className="logo">
+        <div>UNI Resto Cafe</div>
+      </Link>
+
+      <nav className="nav">
+        <div className="header-cart-container">
+          <button
+            type="button"
+            data-testid="cart"
+            onClick={() => history.push('/cart')}
+            className="cart-button"
+          >
+            <p>My Orders</p>
+            <FaShoppingCart className="cart-icon" />
+            {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+          </button>
         </div>
-      </div>
-    </div>
+        <button type="button" onClick={handleLogout} className="logout-button">
+          Logout
+        </button>
+      </nav>
+    </header>
   )
 }
+
 export default Header
